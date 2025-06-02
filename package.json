@@ -1,0 +1,22 @@
+{
+  "name": "call-intent-analyzer",
+  "version": "1.0.0",
+  "description": "A Node.js application to analyze call intent using OpenAI",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "openai",
+    "call-center"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "express": "^5.1.0",
+    "openai": "^5.0.1"
+  }
+}
