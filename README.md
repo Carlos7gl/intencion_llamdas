@@ -24,11 +24,10 @@ This Node.js application uses Express.js to read call identifiers from a JSON fi
 
     Example `.env` file:
     ```
-    OPENAI_API_KEY=your_openai_api_key_here
+    OPENAI_API_KEY="your_openai_api_key_here"
+    RINGOVER_API_KEY="your_ringover_api_token_here"
     ```
-    If you don't use a `.env` file or environment variables, you'll need to replace the placeholder `'YOUR_OPENAI_API_KEY'` directly in `app.js` (not recommended for production).
-
-    The application currently uses a placeholder for the transcription API: `https://jsonplaceholder.typicode.com/posts/:id`.
+    If you don't use a `.env` file or environment variables, you'll need to manage these keys appropriately (e.g., by setting them directly in your deployment environment or, not recommended for production, modifying `app.js`).
 
 ## Running the Application
 
@@ -75,13 +74,13 @@ The application reads call identifiers from `call_ids.json`. Make sure this file
 1.  The `/process-calls` endpoint is triggered.
 2.  `call_ids.json` is read to get a list of call identifiers.
 3.  For each call ID:
-    *   `getTranscription(callId)`: Makes a GET request to `https://jsonplaceholder.typicode.com/posts/:id` (using a number extracted from `callId` or '1' as `:id`). The `title` field of the response is used as the mock transcription.
-    *   `getIntent(transcription)`: Sends the transcription to the OpenAI API (`gpt-3.5-turbo` model by default) with a prompt to determine the customer's intent.
+    a.  `getTranscription(callId)`: Makes a GET request to `https://public-api.ringover.com/v2/transcriptions/:callId` using an `Authorization: Bearer <RINGOVER_API_KEY>` header. The actual transcription is expected in a field like `transcription_text` from the API's JSON response.
+    b.  `getIntent(transcription)`: Sends the transcription to the OpenAI API (`gpt-3.5-turbo` model by default) with a prompt to determine the customer's intent.
 4.  The results (call ID, transcription, intent) for all calls are returned as a JSON response.
 
 ## Placeholders & Customization
 
-*   **Transcription API:** The `getTranscription` function currently uses `https://jsonplaceholder.typicode.com`. You'll need to modify this function to point to your actual transcription API and handle its specific request/response format.
-*   **OpenAI API Key:** Ensure your `OPENAI_API_KEY` is correctly set up either as an environment variable or by replacing the placeholder in `app.js`.
+*   **Transcription API:** The application now uses the Ringover API. Ensure your `RINGOVER_API_KEY` is correctly set as an environment variable. The application assumes the transcription is returned in a `transcription_text` field in the JSON response from Ringover. If the actual field name is different, you may need to adjust the `getTranscription` function in `app.js`.
+*   **OpenAI API Key:** Ensure your `OPENAI_API_KEY` is correctly set up.
 *   **OpenAI Prompt & Model:** The prompt and model (`gpt-3.5-turbo`) used in `getIntent` can be customized to better suit your needs.
 ```

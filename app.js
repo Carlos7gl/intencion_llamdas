@@ -27,17 +27,34 @@ app.get('/', (req, res) => {
 });
 
 const getTranscription = async (callId) => {
-  console.log(`Fetching transcription for ${callId}...`);
+  console.log(`Fetching transcription for ${callId} from Ringover...`);
+
+  const ringoverApiKey = process.env.RINGOVER_API_KEY;
+  if (!ringoverApiKey) {
+    console.warn('RINGOVER_API_KEY is not set. Cannot fetch transcription from Ringover.');
+    return `Failed to fetch transcription for ${callId}: RINGOVER_API_KEY not configured.`;
+  }
+
   try {
-    const match = callId.match(/\d+/);
-    const postId = match ? match[0] : '1';
-    const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}`);
-    const transcription = response.data && response.data.title ? response.data.title : `No transcription found for ${callId}.`;
-    console.log(`Transcription for ${callId}: "${transcription}"`);
+    const response = await axios.get(`https://public-api.ringover.com/v2/transcriptions/${callId}`, {
+      headers: {
+        'Authorization': `Bearer ${ringoverApiKey}`
+      }
+    });
+
+    // Assuming the response data has a field like 'transcription_text' or similar
+    // This might need adjustment based on the actual API response structure
+    const transcription = response.data && response.data.transcription_text ? response.data.transcription_text : `No transcription content found for ${callId} in Ringover response.`;
+
+    console.log(`Transcription for ${callId} from Ringover: "${transcription.substring(0, 50)}..."`);
     return transcription;
   } catch (error) {
-    console.error(`Error fetching transcription for ${callId}:`, error.message);
-    return `Failed to fetch transcription for ${callId}.`;
+    console.error(`Error fetching transcription for ${callId} from Ringover:`, error.message);
+    if (error.response) {
+      console.error('Ringover API Error Response:', error.response.status, error.response.data);
+      return `Failed to fetch transcription for ${callId} from Ringover. Status: ${error.response.status}`;
+    }
+    return `Failed to fetch transcription for ${callId} from Ringover.`;
   }
 };
 
