@@ -4,6 +4,11 @@ const axios = require('axios');
 const OpenAI = require('openai'); // Added OpenAI
 
 const app = express();
+
+// Set EJS as the templating engine
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views'); // Optional: specify views directory, default is 'views'
+
 const port = process.env.PORT || 3000;
 
 // Initialize OpenAI client
@@ -15,7 +20,10 @@ const openai = new OpenAI({
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Call Intent Analyzer is running!');
+  res.render('status', {
+    title: 'Call Intent Analyzer Status',
+    currentTime: new Date().toLocaleString()
+  });
 });
 
 const getTranscription = async (callId) => {

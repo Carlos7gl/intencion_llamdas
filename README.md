@@ -48,6 +48,14 @@ This Node.js application uses Express.js to read call identifiers from a JSON fi
     curl -X POST http://localhost:3000/process-calls
     ```
 
+## Status Page
+
+To check if the server is running correctly, open your web browser and navigate to the root URL:
+
+`http://localhost:3000/`
+
+This page will display a status message and the current server time.
+
 ## Input File
 
 The application reads call identifiers from `call_ids.json`. Make sure this file exists in the root directory and has the following format:
